@@ -12,11 +12,13 @@
 # switch to environment JVM as needed
 #JAVA_HOME=/usr/lib/jvm/java-8-oracle
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+#JAVA_HOME=/data/programs/jdk1.8
 JAVAC_CMD=$JAVA_HOME/bin/javac
 JAVA_CMD=$JAVA_HOME/bin/java
 
 # Contest tool
-TOOL_HOME=/usr/local/bin
+#TOOL_HOME=/usr/local/bin
+TOOL_HOME=/data/PhD/SBSTContest/2018/myfork/junitcontest/bin
 JAR=$TOOL_HOME/lib/benchmarktool-1.0.0-shaded.jar
 # dependencies
 JUNIT_JAR=$TOOL_HOME/lib/junit-4.12.jar
@@ -25,7 +27,8 @@ PITEST_JAR=$TOOL_HOME/lib/pitest-1.1.4.jar:$TOOL_HOME/lib/pitest-command-line-1.
 JACOCO_JAR=$TOOL_HOME/lib/jacocoagent.jar
 
 # Contest benchmarks (CUTs)
-BENCH_HOME=/var/benchmarks
+#BENCH_HOME=/var/benchmarks
+BENCH_HOME=$TOOL_HOME/benchmarks
 CONF=$BENCH_HOME/conf/benchmarks.list
 
 echo "---------"

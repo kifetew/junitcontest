@@ -20,18 +20,21 @@ fi
 echo Runing paralel script from = $PWD at $(date +%Y/%m/%d-%H:%M:%S)
 CURRENT_DIRECTORY=$PWD
 
+# framework root dir
+FRAMEWORK_ROOT=/data/PhD/SBSTContest/2018/myfork/junitcontest/ #$(dirname $0)/../../
+
 # contest tools: users and tool' folders
 # (5th edition of the contest celebrated in 2017)
-EVOSUITE_USER=evosuite_4th
-EVOSUITE_DIR=/home/$EVOSUITE_USER
-T3_USER=t3_4th
-T3_DIR=/home/$T3_USER/2016
+EVOSUITE_USER=evosuite
+EVOSUITE_DIR=$FRAMEWORK_ROOT/home/$EVOSUITE_USER
+T3_USER=t3
+T3_DIR=$FRAMEWORK_ROOT/home/$T3_USER #/2016
 DSC_USER=dsc_5th
-DSC_DIR=/home/$DSC_USER
-RANDOOP_USER=randoop_4th
-RANDOOP_DIR=/home/$RANDOOP_USER
-JTEXPERT_USER=jtexpert_4th
-JTEXPERT_DIR=/home/$JTEXPERT_USER
+DSC_DIR=$FRAMEWORK_ROOT/home/$DSC_USER
+RANDOOP_USER=randoop
+RANDOOP_DIR=$FRAMEWORK_ROOT/home/$RANDOOP_USER
+JTEXPERT_USER=jtexpert
+JTEXPERT_DIR=$FRAMEWORK_ROOT/home/$JTEXPERT_USER
 
 NRUNS=$2
 RUN_START_FROM=$1
@@ -63,10 +66,10 @@ run_tool_process() {
 
         echo $TOOLNAME -  Current dir = $PWD
         echo - - - $TOOLNAME - contest_generate_tests.sh $TOOLNAME $NRUNS $RUN_START_FROM $TIME_BUDGET at $(date +%Y/%m/%d-%H:%M:%S)
-	contest_generate_tests.sh "$TOOLNAME" "$NRUNS" "$RUN_START_FROM" "$TIME_BUDGET" > execution_generate_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt 2>execution2_generate_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt
+	$FRAMEWORK_ROOT/bin/scripts/contest_generate_tests.sh "$TOOLNAME" "$NRUNS" "$RUN_START_FROM" "$TIME_BUDGET" > execution_generate_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt 2>execution2_generate_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt
 
         echo === $TOOLNAME -  contest_compute_metrics.sh results_$TOOLNAME\_$TIME_BUDGET at $(date +%Y/%m/%d-%H:%M:%S)
-	contest_compute_metrics.sh results_"$TOOLNAME"\_"$TIME_BUDGET" > execution_compute_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt 2>execution2_compute_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt
+	$FRAMEWORK_ROOT/bin/scripts/contest_compute_metrics.sh results_"$TOOLNAME"\_"$TIME_BUDGET" > execution_compute_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt 2>execution2_compute_$NRUNS_$RUN_START_FROM_$TIME_BUDGET.txt
 
         cd $CURRENT_DIRECTORY
         echo $TOOLNAME - Current dir = $PWD
@@ -75,7 +78,8 @@ run_tool_process() {
 
 for TIME_BUDGET in ${@:3} # $3 onwards
 do	for TOOLNAME in evosuite t3 jtexpert randoop # contest tools
-	do      run_tool_process $TOOLNAME $TIMEBUDGET &
+	do      
+		run_tool_process $TOOLNAME $TIMEBUDGET &
 	done
 	# wait for all process being completed
 	wait

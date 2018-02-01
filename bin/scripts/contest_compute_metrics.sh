@@ -14,6 +14,10 @@ then
         exit 0;
 fi
 
+
+# framework root dir
+FRAMEWORK_ROOT=/data/PhD/SBSTContest/2018/myfork/junitcontest/
+
 RESULTS_DIR=$1
 echo "Results folder is `basename $RESULTS_DIR`"
 RESULTS_DIRNAME=`basename $RESULTS_DIR`
@@ -52,7 +56,7 @@ for f in `find $RESULTS_DIR -name '*-*_*'`; do
 
 	TESTCASES_FOLDER=$RESULTS_DIR/$FOLDER_NAME/temp/testcases
 	echo "TESTCASES_FOLDER=$TESTCASES_FOLDER"
-	CMD="contest_run_benchmark_tool.sh $TOOLNAME $SUT_ID . $RUN_ID $BUDGET --only-compute-metrics $TESTCASES_FOLDER"
+	CMD="$FRAMEWORK_ROOT/bin/scripts/contest_run_benchmark_tool.sh $TOOLNAME $SUT_ID . $RUN_ID $BUDGET --only-compute-metrics $TESTCASES_FOLDER"
 	echo "Executing metrics computation using $CMD"
 	$CMD
 	TRANSCRIPT_FILE="transcript.csv"
