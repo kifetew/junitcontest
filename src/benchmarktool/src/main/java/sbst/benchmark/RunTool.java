@@ -31,6 +31,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -94,6 +95,8 @@ public class RunTool {
 
 			execute(task, testcasesDir, new SBSTChannel(stdout, stdin, Main.debugStr));
 
+		} catch (TimeoutException e) {
+			Main.info("\n\nA timeout occurred waiting for signal READY");
 		} finally {
 			Main.debug("Stopping process...");
 			killUnixProcess(toolSubprocess);
@@ -101,7 +104,7 @@ public class RunTool {
 		}
 	}
 
-	private void execute(IBenchmarkTask task, File testcases, SBSTChannel channel) throws IOException {
+	private void execute(IBenchmarkTask task, File testcases, SBSTChannel channel) throws IOException, TimeoutException {
 		channel.emit("BENCHMARK");
 		listener.startPreprocess();
 		channel.emit(task.getSourceDirectory());
@@ -140,8 +143,11 @@ public class RunTool {
 					channel.emit(cname);
 					listener.startClass(cname);
 					if (this.timeBudget != -1) {
+						// Fitsum: TimeoutException handled by the calling method (process is terminated).
+						// old code didn't handle this case
+						
 						// enfore time budget
-						try {
+//						try {
 							long budget_millis = timeBudget * 1000;
 							long extra_time_millis = (long) ((double) budget_millis * EXTRA_TIME_FACTOR);
 							long timeout_millis = budget_millis + extra_time_millis;
@@ -151,10 +157,10 @@ public class RunTool {
 									timeBudget, (timeout_millis / 1000)));
 							token(channel, "READY", timeout_millis);
 							Main.info("\n\n Execution finished with no timeout");
-						} catch (TimeoutException ex) {
-							Main.info("\n\nA timeout occurred waiting for signal READY");
+//						} catch (TimeoutException ex) {
+//							Main.info("\n\nA timeout occurred waiting for signal READY");
 							// kill subprocess
-						}
+//						}
 					} else {
 						// no time limit
 						channel.token("READY");
@@ -210,10 +216,13 @@ public class RunTool {
 
 		try {
 			future.get(timeout_millis, TimeUnit.MILLISECONDS);
-		} catch (Exception e) {
-			for (StackTraceElement trace : e.getStackTrace())
+		} catch (InterruptedException ie) {
+			for (StackTraceElement trace : ie.getStackTrace())
 				Main.debug(""+trace);
-			Main.debug("Error: \n"+e.getCause());
+			Main.debug("Error: \n"+ie.getCause());
+			ie.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
