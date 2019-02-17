@@ -117,7 +117,7 @@ public class RandoopTool implements ITestingTool {
 		String javaCommand = buildJavaCommand();
 		cmdLine.append(String.format("%s -cp %s randoop.main.Main gentests ", javaCommand, classPath));
 		cmdLine.append(String.format("--testclass=%s ", testClass));
-		cmdLine.append(String.format("--timelimit=%s ", timeLimit));
+		cmdLine.append(String.format("--time-limit=%s ", timeLimit));
 		cmdLine.append(String.format("--junit-output-dir=%s ", junitOutputDirName));
 
 		final String regressionTestFileName;
@@ -139,7 +139,7 @@ public class RandoopTool implements ITestingTool {
 		cmdLine.append("--omitmethods=random ");
 		cmdLine.append("--silently-ignore-bad-class-names=true ");
 		cmdLine.append("--testsperfile=100 ");
-		cmdLine.append("--ignore-flaky-tests=true ");
+		cmdLine.append("--flaky-test-behavior=DISCARD ");
 
 		String cmdToExecute = cmdLine.toString();
 
