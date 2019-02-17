@@ -1,55 +1,129 @@
-# junitcontest
-junit tools contest infrastructure
+# JUnit Tool Contest Infrastructure
 
-# About
+The seventh edition of the tool contest, held at the SBST workshop co-located with ICSE'19, May 26-27 2019, Montreal, Canada.
+Here you will find the source code to the contest infrastructure and instructions on how to test your tool with the infrastructure before submitting it to the competition.
 
-This is the source code for the contest infrastructure for junit testing tools.
-The contest was initiated during the FITTEST European project no. 257574 (2010-2013)
-and hence partly funded by the FP7 programme on ICT Software & Service Architectures and Infrastructures.
+# Important dates
+- The tool submission: February 15
+- Benchmark results communicated to authors: February 28
+- Authors submit camera ready paper: March 15
 
-The [FITTEST](http://crest.cs.ucl.ac.uk/fittest/) project, which developed an integrated environment for the automated and continuous testing of Future Internet Applications, was coordinated by:<br />
+# Try it via Docker
+For easier access and use, this year we have dockerized the contest infrastructure. Here are the instructions for testing your tool via docker:
+## Prerequisites:
+Install the docker software on your machine. Docker is available for Linux, Mac and Windows. For installation please follow the instructions for your operating system: 
+- Windows: https://docs.docker.com/docker-for-windows/install/ 
+- Mac: https://docs.docker.com/docker-for-mac/install/ 
+- Linux/Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/#extra-steps-for-aufs 
 
-  Tanja E. J. Vos (tvos@pros.upv.es)<br />
-  Software Quality & Testing<br />
-  Research Center on Software Production Methods ([PROS](http://www.pros.webs.upv.es/))<br />
-  Department of Information Systems and Computation ([DSIC](http://www.upv.es/entidades/DSIC/index.html))<br />
-  Universitat Politècnica de València ([UPV](http://www.upv.es/))<br />
-  Camino de Vera s/n, 46022 Valencia (Spain)<br />
+The command to run the docker image that contains the junit contest infrastructure is the following:
+```sh
+$ docker run -v /path/to/host/folder:/path/to/container/folder --name=junitcontest -it dockercontainervm/junitcontest:test
+```
 
-The contest infrastructure has been used in testing contests during yearly events from 2013 till 2017.
-An upcoming event is expected for 2018: check information below
-For more information see [DETAILS](/DETAILS) and [PUBLICATIONS](/PUBLICATIONS.md).
+* -v: it is needed to specify the tool folder in the host machine that needs to be attached to the docker container. For example:
+```sh
+$ docker run -v ~/Desktop/randoop/:/home/randoop --name=junitcontest -it dockercontainervm/junitcontest:test
+```
+The randoop folder under the Desktop folder in host machine is mapped to the randoop folder under the home folder in the docker container (guest). The randoop folder in the host machine is shared with the container, therefore every file written in this folder will be in both the host and the guest machines.
 
-# 6th junit contest - in progress
+* --name=junitcontest: it is the name of the container (junitcontest in this case). The name is optional, if skipped Docker assigns a random name automatically.
 
-After 5 years of successful junit tools competitions its time for the 6th round to be celebrated in the 11th International SBST workshop [1] to be held in conjunction with ICSE conference [2].
+* -it: it means that the user can access the docker container interactively, as if the user was in the command line of the guest system.
 
-The call for participation is now closed, but do not hesitate making contact if you would like to contribute with a junit tool. We are happy to assist you preparing your tool for the contest. Any tool that automatically generates test cases (JUnit4 format) for Java programs at the class level. You can find details about the contest benchmark infrastructure, and also about the tool requirements, in this public repository.
+* dockercontainervm/junitcontest:test: it is the name of the docker image. The first time the command is run, docker automatically downloads the image from a public repository. Once the image is in the system, docker simply uses it. The image is built upon the last version of Ubuntu (18.04 LTS).
 
-Important dates:
-* Tool set up (runtool script and libs): ready due **26th January**
-* Competition: contest finished and data available due **9th February**
-* Contest reports: submissions due **16th February**
-	
-[1] SBST2018 - 11th International Workshop on Search-Based Software Testing, May 28-29 2018
-http://software.imdea.org/sbst18/
+Once you execute the docker run command, you are in the docker container. Move to the container folder where you mapped the tool, using the -v option (in the example is /home/randoop). The tool folder must meet the requirements specified in [DETAILS](/DETAILS) . For an example of a correct tool folder please see: [RANDOOP](https://github.com/PROSRESEARCHCENTER/junitcontest/tree/master/tools/randoop).
+(If you use the randoop tool from the github repository above, make sure to change the variable JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 to JAVA_HOME=/usr in the "runtool" script)
 
-[2] ICSE2018 - 40th International Conference on Software Engineering, May 27 - 3 June 2018, Gothenburg, Sweden
-https://www.icse2018.org/
+If the tool satisfies the requirements, from the tool folder (/home/randoop), run: 
+```sh
+$ contest_generate_tests.sh tool-name runs-number runs-start-from time-budget-seconds
+```
 
-# Target
+For example:
+```sh
+$ contest_generate_tests.sh randoop 1 1 10
+```
+This script runs one excution of the test generation tool randoop for 10 seconds.
 
-Linux (Ubuntu x64)
+As the generation goes on, you should see files written in the shared folder in the host machine (in the example ~/Desktop/randoop).
 
-# Folder contents
+To compute the metrics (i.e., coverage and mutation score) for the test cases generated by the command in the previous example, run the following command, from the same directory:
+```sh
+$ contest_compute_metrics.sh results_randoop_10 > stat_log.txt 2> error_log.txt 
+```
+Note that the folder `results_randoop_10` is automatically generated by the `contest_generate_tests.sh` script and contains, among other things, the test cases generated.
+
+Once you are done, you can exit from the container by running: 
+```sh
+$ exit
+```
+The command brings you back to the host machine. 
+
+Optionally you can remove the container by running: 
+```sh
+$ docker rm <container-name>"
+```
+For the example, run: 
+```sh
+$ docker rm junitcontest
+```
+Other docker commands:
+```sh
+$ docker ps: shows all running containers
+$ docker ps -a: shows all containers (in every status)
+```
+
+# Try it via manual installation
+You can also install the contest infrastructure directly on your machine and test your tool. Below you find basic information and detailed instructions.
+
+Target: Linux (Ubuntu x64)
+
+Folder contents:
 
 * [bin](/bin):   Contest infrastructure binaries
 * [src](/src):   Contest infrastructure source code
 * [tools](/tools): Contest tools
 
-# Requirements
+Requirements:
 
 Java8 (JDK):
-```shell-script
-apt-get install default-jdk
+```sh
+$ apt-get install default-jdk
 ```
+Installation instructions:
+
+For detailed instructions see [DETAILS](/DETAILS) 
+
+
+# About the contest 
+
+This is the source code for the contest infrastructure for junit testing tools.
+The contest was initiated during the FITTEST European project no. 257574 (2010-2013)
+and hence partly funded by the FP7 programme on ICT Software & Service Architectures and Infrastructures.
+
+The [FITTEST](http://crest.cs.ucl.ac.uk/fittest/) project, which developed an integrated environment for the automated and continuous testing of Future Internet Applications, was coordinated by:
+
+  Tanja E. J. Vos (tvos@pros.upv.es)
+  Software Quality & Testing
+  Research Center on Software Production Methods ([PROS](http://www.pros.webs.upv.es/))
+  Department of Information Systems and Computation ([DSIC](http://www.upv.es/entidades/DSIC/index.html))
+  Universitat Politècnica de València ([UPV](http://www.upv.es/))
+  Camino de Vera s/n, 46022 Valencia (Spain)
+
+The contest infrastructure has been used in testing contests during yearly events from 2013 till 2017 (check the [Acknowledgements](ACKNOWLEDGEMENTS.md) and [Publications](PUBLICATIONS.md)).
+
+The latest edition was in February 2018: the 6th round of the junit contest series, which was celebrated at the 11th International SBST workshop [1] held in conjunction with the ICSE conference [2]:
+* [1] SBST2018 - 11th International Workshop on Search-Based Software Testing, May 28-29 2018
+    * URL: http://software.imdea.org/sbst18/
+    * Contest Committee
+        * Urko Rueda Molina (Chair), Universitat Politècnica de València
+        * Fitsum Kifetew (co-Chair), Fondazione Bruno Kessler
+        * Annibale Panichella, University of Luxembourg and Delft University of Technology
+* [2] ICSE2018 - 40th International Conference on Software Engineering, May 27 - 3 June 2018, Gothenburg, Sweden https://www.icse2018.org/
+
+# Publications
+
+For publications from previous editions see [PUBLICATIONS](/PUBLICATIONS.md).
+
