@@ -21,7 +21,8 @@ echo Runing paralel script from = $PWD at $(date +%Y/%m/%d-%H:%M:%S)
 CURRENT_DIRECTORY=$PWD
 
 # framework root dir
-FRAMEWORK_ROOT=/data/PhD/SBSTContest/2018/myfork/junitcontest/ #$(dirname $0)/../../
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+FRAMEWORK_ROOT=$($SCRIPTS_DIR/get_framework_root.sh) #/data/PhD/SBSTContest/2018/myfork/junitcontest/ 
 
 # contest tools: users and tool' folders
 # (5th edition of the contest celebrated in 2017)

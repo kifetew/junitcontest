@@ -16,7 +16,8 @@ then
         exit 0;
 fi
 
-FRAMEWORK_ROOT=/data/PhD/SBSTContest/2018/myfork/junitcontest/
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+FRAMEWORK_ROOT=$($SCRIPTS_DIR/get_framework_root.sh) #/data/PhD/SBSTContest/2018/myfork/junitcontest/
 RSCRIPT=$FRAMEWORK_ROOT/bin/scripts/statistical.analysis.R
 TRANSCRIPT=$1 # path to single transcript
 OUTPUT=$2 # directory where to save the results

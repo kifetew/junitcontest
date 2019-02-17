@@ -11,14 +11,16 @@
 
 # switch to environment JVM as needed
 #JAVA_HOME=/usr/lib/jvm/java-8-oracle
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+JAVA_HOME=/usr/ #/usr/lib/jvm/java-8-openjdk-amd64
 #JAVA_HOME=/data/programs/jdk1.8
 JAVAC_CMD=$JAVA_HOME/bin/javac
 JAVA_CMD=$JAVA_HOME/bin/java
 
 # Contest tool
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+FRAMEWORK_ROOT=$($SCRIPTS_DIR/get_framework_root.sh) #/data/PhD/SBSTContest/2018/myfork/junitcontest/
 #TOOL_HOME=/usr/local/bin
-TOOL_HOME=/data/PhD/SBSTContest/2018/myfork/junitcontest/bin
+TOOL_HOME=$FRAMEWORK_ROOT/bin #/data/PhD/SBSTContest/2018/myfork/junitcontest/bin
 JAR=$TOOL_HOME/lib/benchmarktool-1.0.0-shaded.jar
 # dependencies
 JUNIT_JAR=$TOOL_HOME/lib/junit-4.12.jar
